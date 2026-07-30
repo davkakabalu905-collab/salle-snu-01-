@@ -390,10 +390,11 @@ def claudia_status():
 #   LANCEMENT
 # ══════════════════════════════════════════════════════════════
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5050))
     print("\n" + "═" * 60)
     print("  CLAUDIA — Assistante Vocale SNU (RAG · Sans JWT)")
-    print("  Backend Python · Port 5050")
+    print(f"  Backend Python · Port {port}")
     print(f"  Modèle : {GEMINI_MODEL_NAME}")
     print(f"  Limite : {RATE_LIMIT_MAX} questions / 5 heures")
     print("═" * 60 + "\n")
-    app.run(host="127.0.0.1", port=5050, debug=False, threaded=True)
+    app.run(host="0.0.0.0", port=port, debug=False, threaded=True)

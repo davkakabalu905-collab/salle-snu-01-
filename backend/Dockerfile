@@ -9,7 +9,7 @@ WORKDIR /app
 COPY . /app
 
 # Installation des dépendances
-RUN pip install --no-cache-dir flask flask-cors python-dotenv google-generativeai requests PyJWT
+RUN pip install --no-cache-dir flask flask-cors python-dotenv google-genai google-generativeai requests PyJWT gunicorn
 
 # Appliquer les permissions à l'utilisateur non root
 RUN chown -R claudia_user:claudia_user /app
