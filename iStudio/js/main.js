@@ -780,7 +780,7 @@
     // URL du backend — définie dans index.html (window.CLAUDIA_BACKEND_URL)
     // En développement : http://127.0.0.1:5050
     // En production  : https://votre-backend.railway.app (à configurer dans index.html)
-    var CLAUDIA_BACKEND   = (window.CLAUDIA_BACKEND_URL || 'http://127.0.0.1:5050').replace(/\/$/, '');
+    var CLAUDIA_BACKEND   = (window.CLAUDIA_BACKEND_URL || 'https://salle-unilu-backend.onrender.com').replace(/\/$/, '');
     var CLAUDIA_API        = CLAUDIA_BACKEND + '/claudia/ask';
     var CLAUDIA_STATUS_API = CLAUDIA_BACKEND + '/claudia/status';
 
