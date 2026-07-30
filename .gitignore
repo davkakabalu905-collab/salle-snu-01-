@@ -1,0 +1,36 @@
+# IDE cache
+.codeatlas/
+iStudio/.codeatlas/
+*.db
+
+# Variables d'environnement (clé API — NE JAMAIS COMMITER)
+.env
+backend/.env
+
+# Fichiers de processus (générés localement)
+backend/.claudia_backend.pid
+backend/.claudia_http.pid
+
+# Logs (générés au runtime)
+backend/*.log
+backend/claudia_*.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environnements virtuels
+venv/
+.venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+*.pid
+*.log
+*.pid
