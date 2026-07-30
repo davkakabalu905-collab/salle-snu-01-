@@ -843,13 +843,27 @@
         el.style.color = remaining <= 2 ? '#ef4444' : '#22c55e';
     }
 
-    // ─── Synthèse vocale navigateur ────────────────────────
+    // ─── Synthèse vocale navigateur (Compatibilité iOS & Safari) ────────
+    var isSpeechUnlocked = false;
+    function unlockIOSSpeech() {
+        if (isSpeechUnlocked || !('speechSynthesis' in window)) return;
+        try {
+            var silentUtterance = new SpeechSynthesisUtterance(' ');
+            silentUtterance.volume = 0.01;
+            window.speechSynthesis.speak(silentUtterance);
+            isSpeechUnlocked = true;
+        } catch(e) {}
+    }
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = function() {
+            try { window.speechSynthesis.getVoices(); } catch(e){}
+        };
+    }
+
     function claudiaSpeak(text, onDone) {
         // Arrêter l'audio en cours si présent
         if (claudiaCurrentAudio) { claudiaCurrentAudio.pause(); claudiaCurrentAudio = null; }
-        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-
-        setClaudiaState('speaking');
 
         if (!('speechSynthesis' in window)) {
             setClaudiaState('idle');
@@ -857,33 +871,59 @@
             return;
         }
 
-        // Remove any remaining emojis or strange characters before speaking
+        // Sur iOS, débloquer au préalable si nécessaire
+        unlockIOSSpeech();
+
+        // Si Claudia est déjà en train de parler, annuler l'ancienne phrase
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+        }
+
+        setClaudiaState('speaking');
+
+        // Nettoyer les émojis et caractères non vocaux
         var cleanText = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{2300}-\u{23FF}]/gu, '');
 
         var utter = new SpeechSynthesisUtterance(cleanText);
         utter.lang   = 'fr-FR';
         utter.rate   = 0.93;
         utter.pitch  = 1.05;
-        utter.volume = 1;
+        utter.volume = 1.0;
 
-        // Voix féminine française
-        var voices = window.speechSynthesis.getVoices();
-        var frVoice = voices.find(function(v) { return v.lang === 'fr-FR' && v.name.toLowerCase().includes('female'); })
-                   || voices.find(function(v) { return v.lang === 'fr-FR'; })
-                   || voices.find(function(v) { return v.lang.startsWith('fr'); });
+        // Détection robuste des voix françaises (compatibilité iOS/Safari/Chrome/Edge)
+        var voices = window.speechSynthesis.getVoices() || [];
+        var frVoice = voices.find(function(v) {
+            var l = (v.lang || '').replace('_', '-').toLowerCase();
+            return (l === 'fr-fr' || l.startsWith('fr')) && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('amélie') || v.name.toLowerCase().includes('thomas') || v.name.toLowerCase().includes('audrey'));
+        }) || voices.find(function(v) {
+            var l = (v.lang || '').replace('_', '-').toLowerCase();
+            return l.startsWith('fr');
+        });
+
         if (frVoice) utter.voice = frVoice;
 
         utter.onend = function() {
             setClaudiaState('idle');
             if (onDone) onDone();
         };
-        utter.onerror = function() {
+        utter.onerror = function(err) {
+            console.warn('[Claudia] Speech error:', err);
             setClaudiaState('idle');
             if (onDone) onDone();
         };
 
-        window.claudiaUtterance = utter; // éviter garbage collection Chrome
-        window.speechSynthesis.speak(utter);
+        window.claudiaUtterance = utter; // Éviter garbage collection Chrome/iOS
+
+        // Petit délai sécurisé pour iOS Safari
+        setTimeout(function() {
+            try {
+                window.speechSynthesis.speak(utter);
+            } catch(e) {
+                console.error('[Claudia] Speak failed:', e);
+                setClaudiaState('idle');
+                if (onDone) onDone();
+            }
+        }, 50);
     }
 
     // ─── Envoi de question au backend ──────────────────────
@@ -1042,6 +1082,7 @@
     var claudiaVoiceBtn = document.getElementById('claudiaVoiceBtn');
     if (claudiaVoiceBtn) {
         claudiaVoiceBtn.addEventListener('click', function () {
+            unlockIOSSpeech();
             var modal = document.getElementById('claudiaSpeakModal');
             if (!modal) return;
 
@@ -1085,6 +1126,7 @@
     var claudiaMicBtn = document.getElementById('claudiaMicBtn');
     if (claudiaMicBtn) {
         claudiaMicBtn.addEventListener('click', function () {
+            unlockIOSSpeech();
             if (claudiaState === 'listening') {
                 // Stopper l'écoute
                 if (claudiaRecognition) { try { claudiaRecognition.stop(); } catch(e){} }
