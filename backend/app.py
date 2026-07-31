@@ -101,7 +101,7 @@ La fiche d'inscription est générée automatiquement et peut être envoyée par
 - Mr Patrick Shimaitu — Tuteur et Support Technique
 - Mme Nsapu Brigitte — Chargée de la comptabilité
 - Mr Mikobi Denis — Maintenance et Logistique
-- Dr ROGET — Directeur de la Salle du Numérique (SNU)
+- CT ROGER — Directeur de la Salle du Numérique (SNU)
 """,
     "temoignages": """
 TÉMOIGNAGES D'APPRENANTS :
@@ -137,7 +137,7 @@ RAG_KEYWORDS = {
     "inscription": ["inscrire", "inscription", "s'inscrire", "rejoindre", "formulaire", "comment", "accès", "abonnement"],
     "equipements": ["ordinateur", "pc", "internet", "5g", "équipement", "matériel", "connexion", "wifi", "box", "bibliothèque", "espace"],
     "services": ["service", "offre", "disponible", "atelier", "tp", "travaux", "pratique", "collaboratif", "abonnement"],
-    "equipe": ["équipe", "directeur", "secrétaire", "tuteur", "responsable", "roget", "patrick", "rachel", "brigitte", "mikobi", "personnel"],
+    "equipe": ["équipe", "directeur", "secrétaire", "tuteur", "responsable", "roger", "patrick", "rachel", "brigitte", "mikobi", "personnel"],
     "contact": ["contact", "téléphone", "whatsapp", "email", "appeler", "joindre", "facebook", "instagram", "numéro", "243"],
     "avantages": ["pourquoi", "avantage", "choisir", "raison", "benefit"],
     "mission": ["mission", "vision", "objectif", "but", "créé", "fondé", "histoire"],

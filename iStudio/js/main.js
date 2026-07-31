@@ -890,11 +890,25 @@
         utter.pitch  = 1.05;
         utter.volume = 1.0;
 
-        // Détection robuste des voix françaises (compatibilité iOS/Safari/Chrome/Edge)
+        // Détection de la voix française avec priorité absolue à Alice (et fallback voix féminines)
         var voices = window.speechSynthesis.getVoices() || [];
         var frVoice = voices.find(function(v) {
+            var name = v.name.toLowerCase();
             var l = (v.lang || '').replace('_', '-').toLowerCase();
-            return (l === 'fr-fr' || l.startsWith('fr')) && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('amélie') || v.name.toLowerCase().includes('thomas') || v.name.toLowerCase().includes('audrey'));
+            return l.startsWith('fr') && name.includes('alice');
+        }) || voices.find(function(v) {
+            var name = v.name.toLowerCase();
+            var l = (v.lang || '').replace('_', '-').toLowerCase();
+            return l.startsWith('fr') && (
+                name.includes('female') || 
+                name.includes('amélie') || 
+                name.includes('audrey') || 
+                name.includes('denise') || 
+                name.includes('hortense') ||
+                name.includes('celine') ||
+                name.includes('céline') ||
+                name.includes('google')
+            );
         }) || voices.find(function(v) {
             var l = (v.lang || '').replace('_', '-').toLowerCase();
             return l.startsWith('fr');
